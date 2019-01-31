@@ -1,4 +1,7 @@
-import * as d3 from 'd3';
+import { select } from 'd3-selection';
+import { scaleOrdinal, scaleLinear, scaleBand } from 'd3-scale';
+import { axisLeft, axisBottom } from 'd3-axis';
+import { range } from 'd3-array';
 
 export class DrawBarChart {
   drawAlt(data: number[][], skillGrade: string[], skillNames: string[]): void {
@@ -8,26 +11,26 @@ export class DrawBarChart {
     const width = 960 - margin.left - margin.right;
     const height = 500 - margin.top - margin.bottom;
 
-    const y = d3.scaleLinear()
+    const y = scaleLinear()
       .domain([0, skillGrade.length - 1])
       .rangeRound([0, height]);
 
-    const yAx = d3.scaleLinear()
+    const yAx = scaleLinear()
       .domain([0, skillGrade.length - 1])
       .rangeRound([height, 0]);
 
-    const x0 = d3.scaleBand()
-      .domain(d3.range(maxSamplesCounter))
+    const x0 = scaleBand()
+      .domain(range(maxSamplesCounter))
       .rangeRound([0, width]).padding(0.4);
 
-    const x1 = d3.scaleBand()
-      .domain(d3.range(data.length))
+    const x1 = scaleBand()
+      .domain(range(data.length))
       .rangeRound([0, x0.bandwidth()]).padding(0.4);
 
-    const color = d3.scaleOrdinal()
+    const color = scaleOrdinal()
       .range(['#ff64ff', '#9678dc', '#328cdc']);
 
-    const svg = d3.select("#bar-chart")
+    const svg = select("#bar-chart")
       .append("svg")
       .attr('width', width + margin.left + margin.right)
       .attr('height', height + margin.top + margin.bottom)
@@ -35,13 +38,13 @@ export class DrawBarChart {
       .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
     // Axises
-    const xAxis = d3.axisBottom(x0)
+    const xAxis = axisBottom(x0)
       .tickSizeInner(0)
       .tickSizeOuter(0)
       .tickPadding(15)
       .tickFormat((d, i) => skillNames[i]);
 
-    const yAxisLeft = d3.axisLeft(yAx)
+    const yAxisLeft = axisLeft(yAx)
       .ticks(skillGrade.length)
       .tickPadding(8)
       .tickSizeInner(-width)

@@ -1,4 +1,6 @@
-import * as d3 from 'd3';
+import { select } from 'd3-selection';
+import { scaleOrdinal, scaleLinear } from 'd3-scale';
+import { axisLeft, axisBottom } from 'd3-axis';
 
 export class DrawBarChart {
   drawAlt(data) {
@@ -19,23 +21,23 @@ export class DrawBarChart {
     }
 
 // Color scale
-    const color = d3.scaleOrdinal()
+    const color = scaleOrdinal()
       .range(['#ff64ff', '#9678dc', '#328cdc']);
     const chartHeight = barHeight * zippedData.length + gapBetweenGroups * data.labels.length;
 
-    const x = d3.scaleLinear()
+    const x = scaleLinear()
       .domain([0, 100])
       .range([0, chartWidth]);
 
-    const y = d3.scaleLinear()
+    const y = scaleLinear()
       .range([chartHeight + gapBetweenGroups, 0]);
 
-    const yAxis = d3.axisLeft()
+    const yAxis = axisLeft()
       .scale(y)
       .tickFormat('')
       .tickSize(0);
 
-    const xAxis = d3.axisBottom(x)
+    const xAxis = axisBottom(x)
       .tickSizeInner(-chartHeight)
       .tickSizeOuter(0)
       .tickPadding(10)
@@ -43,7 +45,7 @@ export class DrawBarChart {
       .ticks(10);
 
 // Specify the chart area and dimensions
-    const chart = d3.select('#hbar-chart')
+    const chart = select('#hbar-chart')
       .attr('width', spaceForLabels + chartWidth + 50)
       .attr('height', chartHeight + 30);
 

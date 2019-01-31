@@ -1,4 +1,9 @@
-import * as d3 from 'd3';
+import { select, Selection } from 'd3-selection';
+import { transition, Transition } from 'd3-transition';
+import { scaleOrdinal, scaleLinear } from 'd3-scale';
+import { axisLeft, axisBottom } from 'd3-axis';
+import { max } from 'd3-array';
+import { line } from 'd3-shape';
 
 export class DrawLineChart {
   drawAlt(dataset) {
@@ -21,33 +26,33 @@ export class DrawLineChart {
     });
 
     /* Scale */
-    const xScale = d3.scaleLinear()
+    const xScale = scaleLinear()
       .domain([0, data[0].values.length - 1])
       .range([0, width-margin]);
 
-    const yScale = d3.scaleLinear()
-      .domain([0, d3.max(data[0].values, d => d.price)])
+    const yScale = scaleLinear()
+      .domain([0, max(data[0].values, d => d.price)])
       .range([height-margin, 0]);
 
-    const color = d3.scaleOrdinal()
+    const color = scaleOrdinal()
       .range(['#ff64ff', '#9678dc', '#328cdc']);
 
     /* Add SVG */
-    const svg = d3.select('#line-chart').append('svg')
+    const svg = select('#line-chart').append('svg')
       .attr('width', (width+margin)+'px')
       .attr('height', (height+margin)+'px')
       .append('g')
       .attr('transform', `translate(${margin}, ${margin})`);
 
     /* Add Axis into SVG */
-    const xAxis = d3.axisBottom(xScale)
+    const xAxis = axisBottom(xScale)
       .tickSizeInner(-height + margin)
       .tickSizeOuter(0)
       .tickPadding(15)
       .tickFormat(d => labels[d])
       .ticks(labels.length);
 
-    const yAxis = d3.axisLeft(yScale)
+    const yAxis = axisLeft(yScale)
       .tickPadding(10)
       .tickSizeInner(-width + margin)
       .tickSizeOuter(0)
@@ -82,7 +87,7 @@ export class DrawLineChart {
       .call(yAxisTransform);
 
     /* Add line into SVG */
-    const line = d3.line()
+    const drawLine = line()
       .x((d, i) => xScale(i))
       .y(d => yScale(d.price));
 
@@ -107,7 +112,7 @@ export class DrawLineChart {
       })
       .append('path')
       .attr('class', 'line')
-      .attr('d', d => line(d.values))
+      .attr('d', d => drawLine(d.values))
       .style('stroke-width', '2px')
       .style('stroke', (d, i) => color(i))
       .style('fill', 'none')
@@ -123,7 +128,7 @@ export class DrawLineChart {
       .append('g')
       .attr('class', 'circle')
       .on('mouseover', function(d, index) {
-        d3.select(this)
+        select(this)
           .style('cursor', 'pointer')
           .append('text')
           .attr('class', 'text')
@@ -132,7 +137,7 @@ export class DrawLineChart {
           .attr('y', d => yScale(d.price) - 10);
       })
       .on('mouseout', function() {
-        d3.select(this)
+        select(this)
           .style('cursor', 'none')
           .transition()
           .duration(duration)
@@ -146,13 +151,13 @@ export class DrawLineChart {
       .style('stroke', '#fff')
       .style('opacity', circleOpacity)
       .on('mouseover', function()  {
-        d3.select(this)
+        select(this)
           .transition()
           .duration(duration)
           .attr("r", circleRadiusHover);
       })
       .on('mouseout', function() {
-        d3.select(this)
+        select(this)
           .transition()
           .duration(duration)
           .attr('r', circleRadius);

@@ -1,4 +1,5 @@
-import * as d3 from 'd3';
+import { select } from 'd3-selection';
+import { scaleOrdinal } from 'd3-scale';
 
 export class DrawLegend {
   draw(colors, data, options): void {
@@ -6,11 +7,11 @@ export class DrawLegend {
     const width = 960 - margin.left - margin.right;
     const height = 50 - margin.top - margin.bottom;
 
-    const color = d3.scaleOrdinal()
+    const color = scaleOrdinal()
       .range(colors);
 
-    const svg = d3.select("#legend")
-      .append("svg")
+    const svg = select('#legend')
+      .append('svg')
       .attr('width', width + margin.left + margin.right)
       .attr('height', height + margin.top + margin.bottom)
       .append('g')

@@ -1,4 +1,6 @@
-import * as d3 from 'd3';
+import { select } from 'd3-selection';
+import { scaleOrdinal } from 'd3-scale';
+import { arc, pie } from 'd3-shape';
 
 export class DrawDonutChart {
   drawAlt(data) {
@@ -7,10 +9,10 @@ export class DrawDonutChart {
     const thickness = 40;
 
     const radius = Math.min(width, height) / 2;
-    const color = d3.scaleOrdinal()
+    const color = scaleOrdinal()
       .range(['#ff64ff', '#9678dc', '#328cdc']);
 
-    const svg = d3.select("#donut-chart")
+    const svg = select("#donut-chart")
       .append('svg')
       .attr('class', 'pie')
       .attr('width', width)
@@ -19,20 +21,20 @@ export class DrawDonutChart {
     const g = svg.append('g')
       .attr('transform', 'translate(' + (width/2 + 50) + ',' + (height/2) + ')');
 
-    const arc = d3.arc()
+    const arcChart = arc()
       .innerRadius(radius - thickness)
       .outerRadius(radius);
 
-    const pie = d3.pie()
+    const pieChart = pie()
       .value(d => d.value)
       .sort(null);
 
     g.selectAll('path')
-      .data(pie(data))
+      .data(pieChart(data))
       .enter()
       .append('g')
       .on('mouseover', function(d) {
-        let g = d3.select(this)
+        let g = select(this)
           .style('cursor', 'pointer')
           .style('fill', 'steelblue')
           .append('g')
@@ -51,21 +53,21 @@ export class DrawDonutChart {
           .attr('dy', '.6em');
       })
       .on('mouseout', function() {
-        d3.select(this)
+        select(this)
           .style('cursor', 'none')
           .style('fill', color(this._current))
           .select('.text-group').remove();
       })
       .append('path')
-      .attr('d', arc)
+      .attr('d', arcChart)
       .attr('fill', (d, i) => color(i))
       .on('mouseover', function() {
-        d3.select(this)
+        select(this)
           .style('cursor', 'pointer')
           .style('opacity', '0.7');
       })
       .on('mouseout', function() {
-        d3.select(this)
+        select(this)
           .style('cursor', 'none')
           .style('opacity', '1')
           .style('fill', color(this._current));

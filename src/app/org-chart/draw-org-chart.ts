@@ -1,4 +1,5 @@
-import * as d3 from 'd3';
+import { select } from 'd3-selection';
+import { stratify, hierarchy, tree } from 'd3-hierarchy';
 
 export class DrawOrgChart {
   drawAlt(flatDataList) {
@@ -43,7 +44,7 @@ export class DrawOrgChart {
     // ************** Generate the tree diagram	 *****************
 
     // convert the flat data into a hierarchy
-    const treeData = d3.stratify()
+    const treeData = stratify()
       .id(d => d.name)
       .parentId(d => d.parent)
       (flatData);
@@ -59,12 +60,12 @@ export class DrawOrgChart {
     const height = 400 - margin.top - margin.bottom;
 
     // declares a tree layout and assigns the size
-    const treemap = d3.tree()
+    const treemap = tree()
     // const treemap = d3.cluster()
       .size([width, height]);
 
     //  assigns the data to a hierarchy using parent-child relationships
-    let nodes = d3.hierarchy(treeData);
+    let nodes = hierarchy(treeData);
 
     // maps the node data to the tree layout
     nodes = treemap(nodes);
@@ -73,7 +74,7 @@ export class DrawOrgChart {
     // appends a 'group' element to 'svg'
     // moves the 'group' element to the top left margin
     const orgChart = document.getElementById('org-chart');
-    const svg = d3.select(orgChart).append('svg')
+    const svg = select(orgChart).append('svg')
         .attr('width', width + margin.left + margin.right)
         .attr('height', height + margin.top + margin.bottom),
       g = svg.append('g')
